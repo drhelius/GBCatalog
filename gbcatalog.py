@@ -215,8 +215,7 @@ for r,d,f in os.walk("."):
             (rom_version,) = struct.unpack('B', version)
 
             rom_checksum = 0
-            for header_byte_b in header[0x134:0x14E]:
-                (header_byte,) = struct.unpack('B', header_byte_b)
+            for header_byte in header[0x134:0x14E]:
                 rom_checksum += header_byte
             rom_checksum = (rom_checksum + 25) & 0xFF
 
