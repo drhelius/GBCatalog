@@ -208,7 +208,7 @@ for r,d,f in os.walk("."):
             if (realsize >= 1024):
                 rom_realsize = str(realsize / 1024) + "Mb"
             else:
-                rom_realsize = str(realsize) + "kb"
+                rom_realsize = str(realsize) + "Kb"
             (rom_romsize,) = struct.unpack('B', romsize)
             (rom_ramsize,) = struct.unpack('B', ramsize)
             (rom_destination,) = struct.unpack('B', destination)
