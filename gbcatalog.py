@@ -201,14 +201,26 @@ for r,d,f in os.walk("."):
             (rom_name_b,) = struct.unpack('15s', name)
             rom_name = rom_name_b.decode("ascii", "ignore")
             rom_name = rom_name[:rom_name.find("\0")]
+            
+            new_rom_name = ''
+            for c in rom_name:
+                n = ord(c)
+                if (n < 32) or (n > 126):
+                    new_rom_name += ' '
+                else:
+                    new_rom_name += chr(n)
+            rom_name = new_rom_name       
+            
             (rom_color,) = struct.unpack('B', color)
             (rom_sgb,) = struct.unpack('B', sgb)
             (rom_type,) = struct.unpack('B', type)
             realsize = (realsize / 1024) * 8
             if (realsize >= 1024):
-                rom_realsize = str(realsize / 1024) + "Mb"
+                rom_realsize = "%0.2f" % (realsize / 1024)
+                rom_realsize += "Mb"
             else:
-                rom_realsize = str(realsize) + "Kb"
+                rom_realsize = "%0.2f" % realsize
+                rom_realsize += "Kb"
             (rom_romsize,) = struct.unpack('B', romsize)
             (rom_ramsize,) = struct.unpack('B', ramsize)
             (rom_destination,) = struct.unpack('B', destination)
