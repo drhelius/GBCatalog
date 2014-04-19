@@ -11,6 +11,6 @@ It can open the following files: <code>.gb .gbc .cgb .sgb .dmg or .zip</code>
 
 Output examples here: 
 
-[HTML](http://www.ignaciosanchezgines.com/gbcatalog/gbcatalog.htm)
+[GoodGBx 3.14 catalogued in HTML](http://www.ignaciosanchezgines.com/gbcatalog/gbcatalog.htm)
 
-[TXT](http://www.ignaciosanchezgines.com/gbcatalog/gbcatalog.txt)
+[GoodGBx 3.14 catalogued in TXT](http://www.ignaciosanchezgines.com/gbcatalog/gbcatalog.txt)
