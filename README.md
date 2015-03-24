@@ -11,6 +11,6 @@ It can open the following files: <code>.gb .gbc .cgb .sgb .dmg or .zip</code>
 
 Output examples here: 
 
-[GoodGBx 3.14 catalogued in HTML](http://www.ignaciosanchezgines.com/gbcatalog/gbcatalog.htm)
+[GoodNES 3.14 catalogued in HTML](http://www.ignaciosanchezgines.com/nescatalog/nescatalog.htm)
 
-[GoodGBx 3.14 catalogued in TXT](http://www.ignaciosanchezgines.com/gbcatalog/gbcatalog.txt)
+[GoodNES 3.14 catalogued in TXT](http://www.ignaciosanchezgines.com/nescatalog/nescatalog.txt)
