@@ -1,5 +1,14 @@
 import os,struct,zipfile
 
+def pow2Ceil(n):
+    n = n - 1
+    n = n | (n >> 1)
+    n = n | (n >> 2)
+    n = n | (n >> 4)
+    n = n | (n >> 8)
+    n = n +1
+    return n
+
 def getGBtype(rom_type):
 
     if (rom_type == 0x00):
@@ -68,7 +77,6 @@ def getGBtype(rom_type):
         return "HuC3"  
     else:
         return "??????"  
-        
 
 def getGBrom(rom_size):
 
@@ -96,7 +104,7 @@ def getGBrom(rom_size):
         return "12Mb"
     else:
         return "??????"  
-        
+
 def getGBram(ram_size):
 
     if (ram_size == 0x00):
@@ -148,12 +156,9 @@ html_file = open("gbcatalog.htm", "w")
 text_file = open("gbcatalog.txt", "w")
 
 counter = 0
-template = "{0:7}{1:110}{2:17}{3:9}{4:22}{5:11}{6:10}{7:10}{8:6}{9:6}{10:8}{11:9}\n"
+template = "{0:7}{1:110}{2:17}{3:9}{4:22}{5:11}{6:10}{7:6}{8:6}{9:6}{10:8}{11:9}\n"
 
-
-
-  
-html_head = '<html><head><link href="gbcatalog.css" rel="stylesheet" type="text/css"></head><body><div class="datagrid"><table><thead><tr><th>#</th><th>FILE</th><th>NAME</th><th>VERSION</th><th>TYPE</th><th>REAL SIZE</th><th>ROM SIZE</th><th>RAM SIZE</th><th>CGB</th><th>SGB</th><th>REGION</th><th>VALID</th></tr></thead><tbody>'
+html_head = '<html><head><link href="gbcatalog.css" rel="stylesheet" type="text/css"></head><body><div class="datagrid"><table><thead><tr><th>#</th><th>FILE</th><th>NAME</th><th>VERSION</th><th>TYPE</th><th>REAL SIZE</th><th>ROM</th><th>BANKS</th><th>RAM</th><th>CGB</th><th>SGB</th><th>REGION</th><th>VALID</th></tr></thead><tbody>'
 html_foot = '</tbody></table></div></body></html>'
 
 html_file.write(html_head)
@@ -167,9 +172,9 @@ for r,d,f in os.walk("."):
             print (files)
 
             if ((counter % 100) == 0):
-                text_file.write("====== ============================================================================================================= ================ ======== ===================== ========== ========= ========= ===== ===== ======= ======\n")
-                text_file.write(template.format("#", "FILE", "NAME", "VERSION", "TYPE", "REAL SIZE", "ROM SIZE", "RAM SIZE", "CGB", "SGB", "REGION", "VALID"))
-                text_file.write("====== ============================================================================================================= ================ ======== ===================== ========== ========= ========= ===== ===== ======= ======\n")
+                text_file.write("====== ============================================================================================================= ================ ======== ===================== ========== ========= ===== ===== ===== ======= ======\n")
+                text_file.write(template.format("#", "FILE", "NAME", "VERSION", "TYPE", "REAL SIZE", "ROM", "BANKS", "RAM", "CGB", "SGB", "REGION", "VALID"))
+                text_file.write("====== ============================================================================================================= ================ ======== ===================== ========== ========= ===== ===== ===== ======= ======\n")
             
             if file_path.endswith(".zip"):    
                 zip_file = zipfile.ZipFile(files, "r")
@@ -214,6 +219,7 @@ for r,d,f in os.walk("."):
             (rom_color,) = struct.unpack('B', color)
             (rom_sgb,) = struct.unpack('B', sgb)
             (rom_type,) = struct.unpack('B', type)
+            filesize = realsize
             realsize = (realsize / 1024) * 8
             if (realsize >= 1024):
                 rom_realsize = "%0.2f" % (realsize / 1024)
@@ -233,7 +239,18 @@ for r,d,f in os.walk("."):
 
             counter+=1
 
-            text_file.write(template.format(str(counter), str(files), rom_name, str(rom_version), getGBtype(rom_type), str(rom_realsize), getGBrom(rom_romsize), getGBram(rom_ramsize), getGBcolor(rom_color), getGBsuper(rom_sgb), getGBcountry(rom_destination), getGBvalid(rom_checksum)))
+            mbc_type = getGBtype(rom_type)
+
+            mbc1 = mbc_type.find("MBC1") >= 0
+
+            bank_count = max(pow2Ceil(filesize // 0x4000), 2)
+
+            mbc1m = (mbc1 and (rom_ramsize == 0) and (bank_count == 64))
+
+            if (mbc1m):
+                mbc_type = "MBC1-MULTICART"
+
+            text_file.write(template.format(str(counter), str(files), rom_name, str(rom_version), mbc_type, str(rom_realsize), getGBrom(rom_romsize), str(bank_count), getGBram(rom_ramsize), getGBcolor(rom_color), getGBsuper(rom_sgb), getGBcountry(rom_destination), getGBvalid(rom_checksum)))
 
 
             if ((counter % 2) == 1):
@@ -241,7 +258,7 @@ for r,d,f in os.walk("."):
             else:
                 html_file.write('<tr class="alt">')
             
-            html_file.write("<td>" + str(counter) + "</td><td>" + str(files) + "</td><td>" + rom_name + "</td><td>" + str(rom_version) + "</td><td>" + getGBtype(rom_type) + "</td><td>" + str(rom_realsize) + "</td><td>" + getGBrom(rom_romsize) + "</td><td>" + getGBram(rom_ramsize) + "</td><td>" + getGBcolor(rom_color) + "</td><td>" + getGBsuper(rom_sgb) + "</td><td>" + getGBcountry(rom_destination) + "</td><td>" + getGBvalid(rom_checksum) + "</td></tr>")
+            html_file.write("<td>" + str(counter) + "</td><td>" + str(files) + "</td><td>" + rom_name + "</td><td>" + str(rom_version) + "</td><td>" + mbc_type + "</td><td>" + str(rom_realsize) + "</td><td>" + getGBrom(rom_romsize) + "</td><td>" + str(bank_count) + "</td><td>" + getGBram(rom_ramsize) + "</td><td>" + getGBcolor(rom_color) + "</td><td>" + getGBsuper(rom_sgb) + "</td><td>" + getGBcountry(rom_destination) + "</td><td>" + getGBvalid(rom_checksum) + "</td></tr>")
            
 html_file.write(html_foot)
 
